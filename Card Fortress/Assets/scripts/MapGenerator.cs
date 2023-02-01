@@ -310,7 +310,7 @@ public class MapGenerator : MonoBehaviour
     {
         money = Mathf.Clamp(money - value,0, int.MaxValue);
         moneyText.text = money.ToString();
-        moneyAnimator.SetTrigger("added");
+        moneyAnimator.SetTrigger("subtract");
     }
 
     public void AddIncome(int Value)

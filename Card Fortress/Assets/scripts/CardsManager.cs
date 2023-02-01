@@ -7,22 +7,21 @@ public class CardsManager : MonoBehaviour
 {
     public static CardsManager cardsManager;
     [SerializeField] private List<Transform> slotList;
-
-
     [SerializeField] private GameObject[] cardsInHand;
-   
+  
+    
+
     [SerializeField] Transform  bagTransform;
     Animator bagAnimator;
-
-
     [SerializeField] Transform  usedTransform;
     Animator usedAnimator;
-
     [SerializeField] Animator coinAnimator;
 
+
     public Transform usedCards;
-    [Space]
     [SerializeField] private List<GameObject> cards;
+    [SerializeField] private List<CardData> cardsData;
+
     public Card selectedCard;
 
     private void Awake()
@@ -84,7 +83,7 @@ public class CardsManager : MonoBehaviour
 
             for (int i = 0; i < slotList.Count; i++)
             {
-                obj = Instantiate(cards[Random.Range(0,cards.Count)], vector3, Quaternion.identity, transform);
+                obj = MakeCard(cardsData[Random.Range(0, cardsData.Count)], vector3);
                 cardsInHand[i] = obj;
                 Card card = obj.GetComponent<Card>();
                 card.target = slotList[i];
@@ -100,8 +99,45 @@ public class CardsManager : MonoBehaviour
 
     public void UsedCard(int slotIndex)
     {
+        Vector3 vector3 = Camera.main.ScreenToWorldPoint(bagTransform.transform.position);
+        vector3 = new Vector3(vector3.x - 2, vector3.y, 10);
         cardsInHand[slotIndex] = null;
+
+
+        obj = MakeCard(cardsData[Random.Range(0, cardsData.Count)], vector3);
+        cardsInHand[slotIndex] = obj;
+        Card card = obj.GetComponent<Card>();
+        card.target = slotList[slotIndex];
+        card.speed = 3.5f + 0.5f * slotIndex;
+        card.usedTransform = usedCards;
+        card.slotIndex = slotIndex;
+        obj.GetComponent<SortingGroup>().sortingOrder = slotList.Count - slotIndex;
+        bagAnimator.SetTrigger("new");
     }
+
+    public GameObject MakeCard(CardData cardData, Vector3 vector3)
+    {
+        GameObject card = cards[0];
+        switch (cardData.cardType)
+        {
+            case CardStats.CardType.building:
+                card = cards[0];
+                break;
+            case CardStats.CardType.spell:
+                card = cards[1];
+                break;
+            case CardStats.CardType.bonus:
+                card = cards[2];
+                break;
+            case CardStats.CardType.upgrade:
+                card = cards[3];
+                break;
+        }
+        card = Instantiate(card, vector3, Quaternion.identity, transform);
+
+        return card;
+    }
+
 
     public void StartAnimation()
     {
