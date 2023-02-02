@@ -147,6 +147,7 @@ public class Enemy : MonoBehaviour
             speed = 0;
             this.damage = 0;
             this.enabled = false;
+            Waves.waves.MonsterWasKilled();
             Destroy(gameObject,10);
         }
     }

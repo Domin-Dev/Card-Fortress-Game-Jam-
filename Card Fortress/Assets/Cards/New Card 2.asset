@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: New Card 2
   m_EditorClassIdentifier: 
   price: 0
-  cardName: 
-  description: 
+  cardName: hghg
+  description: Range /n klklkl \n hjhjhjh \n dgdg
+  isTower: 1
   cardType: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: c6b1827a11e79c243ba5143d9991a7b9, type: 3}
+  building: {fileID: 4858758688710170358, guid: 1eb746c146d449b4e95cf4a0e0c5928d, type: 3}

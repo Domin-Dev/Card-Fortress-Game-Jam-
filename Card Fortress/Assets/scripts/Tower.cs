@@ -10,7 +10,7 @@ public class Tower : MonoBehaviour
     BoxCollider2D boxCollider2D;
 
 
-
+    public string towerName;
     public int currentLifePoints;
     public int maxLifePoints;
     public int damage;

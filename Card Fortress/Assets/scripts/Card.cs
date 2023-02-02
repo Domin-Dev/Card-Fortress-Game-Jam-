@@ -115,7 +115,7 @@ public class Card : MonoBehaviour
             if (cardStats.cardType == CardStats.CardType.building) if (MapGenerator.mapGenerator.Build())
                 {
                     GetComponent<BoxCollider2D>().enabled = false;
-                    MapGenerator.mapGenerator.SubtractMoney(5);
+                    MapGenerator.mapGenerator.SubtractMoney(cardStats.price);
                     isUsed = true;
                     CardsManager.cardsManager.UsedCard(slotIndex);
                     Destroy(gameObject,2f);

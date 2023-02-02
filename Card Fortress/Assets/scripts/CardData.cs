@@ -8,6 +8,7 @@ public class CardData : ScriptableObject
     public int price;
     public string cardName;
     public string description;
+    public bool isTower;
 
     public CardStats.CardType cardType;
     public Sprite sprite;

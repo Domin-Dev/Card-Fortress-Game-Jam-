@@ -5,14 +5,21 @@ using UnityEngine.UI;
 
 public class MapGenerator : MonoBehaviour
 {
+    [SerializeField] Transform info;
+    [SerializeField] Text infoName;
+    [SerializeField] Text infoDescription;
+    int infoIndex = 9999;
+
     [SerializeField] Text moneyText;
     [SerializeField] Text incomeText;
     [SerializeField] Image timeBar;
+    [SerializeField] Text timerText;
     Animator moneyAnimator;
     public int money;
     public int income; 
 
     [SerializeField]  public Color color;
+    [SerializeField]  public Color color2;
     [SerializeField] GameObject rangeImage;
     public static MapGenerator mapGenerator;
 
@@ -22,7 +29,9 @@ public class MapGenerator : MonoBehaviour
     
     [SerializeField] GameObject cell;
     [SerializeField] public int worldSize;
-    public int buildingZone;
+    int buildZone = 7;
+
+
     [SerializeField] GameObject text1;
     [SerializeField] GameObject text2;
 
@@ -40,16 +49,59 @@ public class MapGenerator : MonoBehaviour
         AddMoney(100);
         AddIncome(10);
         timer = setTime;
+        info = infoName.transform.parent.transform;
     }
 
     float timer;
     const int setTime = 10;
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            IncreaseBuildZone(3);
+        }
+
+
+        Vector3 vector3 = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        if(vector3.y > -1.7f && vector3.y < 0.5f)
+        {
+            int index = GetIndex(vector3.x);
+            if(infoIndex != index)
+            {
+                if (index > 0 && index < worldSize * 2 + 1 || Mathf.RoundToInt(vector3.x / 0.5f) == 0)
+                {
+                    if (cells[index].building != null)
+                    {
+                        info.gameObject.SetActive(true);
+                        infoName.text = cells[index].building.name;
+                        Tower tower = cells[index].building.GetComponent<Tower>();
+                        infoDescription.text =
+                            "life points: " + tower.maxLifePoints.ToString() + "\n" +
+                            "damage: " + tower.damage.ToString() + "\n" +
+                            "range: " + tower.range.ToString() + "\n" +
+                            "Push: " + tower.push.ToString() + "\n" +
+                            "rate of fire: " + (60 / tower.interval).ToString() + "\n";
+                    }
+                    else
+                    {
+                        info.gameObject.SetActive(false);
+                    }
+                }
+                else
+                {
+                    info.gameObject.SetActive(false);
+                }
+            }
+
+        }
+       
+
+
         if(timer > 0)
         {
             timer = timer - Time.deltaTime;
             timeBar.fillAmount = 1 - timer / setTime;
+            timerText.text = "income in: " + Mathf.Round(timer).ToString();
         }
         else
         {
@@ -73,7 +125,7 @@ public class MapGenerator : MonoBehaviour
         cells = new Cell[worldSize * 2 + 1];
         GameObject cellObj = Instantiate(cell, new Vector3(0, -5, 0), Quaternion.identity, transform);
         GameObject tower = Instantiate(kingTower, new Vector3(0, -0.9f, 0), Quaternion.identity, transform);
-        cells[0] = new Cell(tower,cellObj);
+        cells[0] = new Cell(tower,cellObj,true);
 
         for (int i = 1; i < worldSize + 15; i++)
         {
@@ -81,16 +133,26 @@ public class MapGenerator : MonoBehaviour
             GameObject obj2 = Instantiate(cell, new Vector3(0.5f * (-i), -5, 0), Quaternion.identity, transform);
             if (i < worldSize + 1)
             {
-                cells[i] = new Cell(null,obj1);
-                cells[worldSize + i] = new Cell(null,obj2);
+                if (i < buildZone + 1)
+                {
+                    cells[i] = new Cell(null, obj1,true);
+                    cells[worldSize + i] = new Cell(null, obj2,true);
+                }
+                else
+                {
+                    cells[i] = new Cell(null, obj1, false);
+                    cells[worldSize + i] = new Cell(null, obj2, false);
+                    obj1.GetComponent<SpriteRenderer>().color = Color.grey;
+                    obj2.GetComponent<SpriteRenderer>().color = Color.grey;
+                }
             }
             else
             {
-                obj1.GetComponent<SpriteRenderer>().color = Color.gray;
-                obj2.GetComponent<SpriteRenderer>().color = Color.gray;
-
+                obj1.GetComponent<SpriteRenderer>().color = Color.grey;
+                obj2.GetComponent<SpriteRenderer>().color = Color.grey;
             }
         }
+        IncreaseBuildZone(0);
     }
 
     public int GetIndex(float positionX)
@@ -212,7 +274,7 @@ public class MapGenerator : MonoBehaviour
                     rangeObj = Instantiate(rangeImage, new Vector3(cells[index].cell.transform.position.x, -0.9f, 0), Quaternion.identity, transform);
                     rangeObj.transform.localScale = new Vector3(2 + 4 * range, 5, 1);
 
-                    if (cells[index].building == null)
+                    if (cells[index].building == null && cells[index].canBuild)
                     {
                         building.GetComponent<SpriteRenderer>().color = Color.green;
                     }
@@ -229,7 +291,7 @@ public class MapGenerator : MonoBehaviour
                 {
                     rangeObj.transform.position = new Vector3(cells[index].cell.transform.position.x, -0.9f, 0); 
                     building.transform.position = new Vector3(cells[index].cell.transform.position.x, -0.9f, 0);
-                    if (cells[index].building == null)
+                    if (cells[index].building == null && cells[index].canBuild)
                     {
                         building.GetComponent<SpriteRenderer>().color = Color.green;
                     }
@@ -273,10 +335,32 @@ public class MapGenerator : MonoBehaviour
         range = 0;
     }
 
+    public void IncreaseBuildZone(int value)
+    {
+        buildZone = Mathf.Clamp(buildZone + value, 0, worldSize);
+
+        for (int i = 1; i < worldSize + 1; i++)
+        {
+            if (i <= buildZone + 1)
+            {
+                cells[i].canBuild = true;
+                cells[worldSize + i].canBuild = true;
+                cells[i].cell.GetComponent<SpriteRenderer>().color = color2;
+                cells[worldSize + i].cell.GetComponent<SpriteRenderer>().color = color2;
+            }
+            else
+            {
+                cells[i].canBuild = false;
+                cells[worldSize + i].canBuild = false;
+                cells[i].cell.GetComponent<SpriteRenderer>().color = Color.grey;
+                cells[worldSize + i].cell.GetComponent<SpriteRenderer>().color = Color.grey;
+            }
+        }
+    }
 
     public bool Build()
     {
-        if (isMap && cells[buildingIndex].building == null)
+        if (isMap && cells[buildingIndex].building == null && cells[buildingIndex].canBuild)
         {
             building.GetComponent<SpriteRenderer>().sortingOrder = -2;
             building.GetComponent<Tower>().enabled = true;

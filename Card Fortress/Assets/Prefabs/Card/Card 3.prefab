@@ -161,6 +161,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startPosition: {x: 0, y: 0, z: 0}
   target: {fileID: 0}
+  usedTransform: {fileID: 0}
+  slotIndex: 0
   speed: 10
 --- !u!114 &2693247264280690091
 MonoBehaviour:
@@ -175,6 +177,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   price: 0
+  cardName: 
+  description: 
+  sprite: {fileID: 0}
   cardType: 2
   building: {fileID: 0}
 --- !u!1 &2693247264770480220
@@ -530,10 +535,22 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2693247265485827661}
-  m_Text: jhjhjhjhjhjhjh
+  m_Text: 'jhjhjhjhjhjhjh
+
+    klljljlj
+
+    hkhkhkhkh
+
+    jkjkjkjkjkjkj
+
+    klklklklklklk
+
+    klklklklklk
+
+    hjhjhjhjh'
   m_OffsetZ: 0
-  m_CharacterSize: 0.05
-  m_LineSpacing: 1
+  m_CharacterSize: 0.04
+  m_LineSpacing: 0.66
   m_Anchor: 4
   m_Alignment: 1
   m_TabSize: 4

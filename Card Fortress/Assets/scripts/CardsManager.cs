@@ -134,6 +134,16 @@ public class CardsManager : MonoBehaviour
                 break;
         }
         card = Instantiate(card, vector3, Quaternion.identity, transform);
+        CardStats cardStats = card.GetComponent<CardStats>();
+        cardStats.cardType = cardData.cardType;
+        cardStats.price = cardData.price;
+        cardStats.building = cardData.building;
+        cardStats.cardName = cardData.cardName;
+        cardStats.sprite = cardData.sprite;
+        cardStats.description = cardData.description;
+        cardStats.isTower = cardData.isTower;
+
+        cardStats.UpdateCard();
 
         return card;
     }

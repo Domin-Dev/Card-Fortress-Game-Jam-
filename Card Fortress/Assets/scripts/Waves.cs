@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Waves : MonoBehaviour
 {
+    public static Waves waves;
     [SerializeField] GameObject orc;
     [SerializeField] GameObject skeleton;
     [SerializeField] GameObject slime;
@@ -11,43 +13,93 @@ public class Waves : MonoBehaviour
     [SerializeField] Animator animatorNewWave;
 
 
+    [SerializeField] Text waveText;
+
+    [SerializeField] Image timerBar;
+    [SerializeField] Text timerText;
+
+    float timer;
+   const float timeWave = 15;
+
     float spawnSite1;
     float spawnSite2;
 
-    public int waveNumber;
+     int waveNumber;
+     int monsterNumber;
+    private void Awake()
+    {
+        if(waves == null)
+        {
+            waves = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+    }
+
     private void Start()
     {
+        monsterNumber = 0;
+        waveNumber = 0;
+        RefreshText();
+        timer = timeWave;
         spawnSite1 = MapGenerator.mapGenerator.worldSize * 0.5f + 6; 
         spawnSite2 = - (MapGenerator.mapGenerator.worldSize * 0.5f + 6); 
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.C))
+        if (timer > 0)
         {
-            animatorNewWave.SetTrigger("new");
-            for (int i = 0; i < 5; i++)
-            {
-                Instantiate(orc, new Vector3(spawnSite1, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
-                Instantiate(orc, new Vector3(spawnSite2, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
-
-                Instantiate(skeleton, new Vector3(spawnSite1, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
-                Instantiate(skeleton, new Vector3(spawnSite2, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
-
-                Instantiate(slime, new Vector3(spawnSite1, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
-                Instantiate(slime, new Vector3(spawnSite2, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
-
-                Instantiate(spider, new Vector3(spawnSite1, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
-                Instantiate(spider, new Vector3(spawnSite2, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
-
-            }
+            timer = timer - Time.deltaTime;
+            timerBar.fillAmount = 1 - timer / timeWave;
+            timerText.text = "next wave in: " + Mathf.Round(timer).ToString();
+        }
+        else if(monsterNumber <= 0)
+        {
+            NextWave();
+        }
 
 
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            NextWave();
         }
     }
 
+    private void NextWave()
+    {
+        timerText.text = " ";
+        waveNumber++;
+        monsterNumber = 8;
+        RefreshText();
+        animatorNewWave.SetTrigger("new");
+        Instantiate(orc, new Vector3(spawnSite1, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
+        Instantiate(orc, new Vector3(spawnSite2, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
+        Instantiate(skeleton, new Vector3(spawnSite1, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
+        Instantiate(skeleton, new Vector3(spawnSite2, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
+        Instantiate(slime, new Vector3(spawnSite1, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
+        Instantiate(slime, new Vector3(spawnSite2, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
+        Instantiate(spider, new Vector3(spawnSite1, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
+        Instantiate(spider, new Vector3(spawnSite2, -Random.Range(0.8f, 1.25f), 0), Quaternion.identity);
+    }
 
+    public void MonsterWasKilled()
+    {
+        monsterNumber = Mathf.Clamp(monsterNumber - 1, 0, int.MaxValue);
+        if (monsterNumber <= 0)
+        {
+            timer = timeWave;
+        }
+        RefreshText();
+    }
 
+    private void RefreshText()
+    {
+        waveText.text = "wave: " + waveNumber + "\nmonsters: " + monsterNumber;
+    }
 
 
 }

@@ -7,10 +7,11 @@ public class Cell
 {
     public GameObject building;
     public GameObject cell;
+    public bool canBuild;
 
     List<Transform> listEnemies = new List<Transform>();
 
-    public Cell(GameObject building, GameObject cell)
+    public Cell(GameObject building, GameObject cell,bool canBuild)
     {
         if(building != null) this.building = building;
         if(cell != null) this.cell = cell;
@@ -21,8 +22,5 @@ public class Cell
         this.building = building;
     }
 
-    public void AddEnemy()
-    {
 
-    }
 }

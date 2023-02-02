@@ -10,10 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bba85283e35eb5842b9cb5d574cd19dc, type: 3}
-  m_Name: New Card 3
+  m_Name: 0
   m_EditorClassIdentifier: 
-  price: 0
-  cardName: 
+  price: 20
+  cardName: Bow Tower
   description: 
+  isTower: 0
   cardType: 0
   sprite: {fileID: 0}
+  building: {fileID: 0}
