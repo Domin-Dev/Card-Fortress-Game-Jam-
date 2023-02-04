@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bba85283e35eb5842b9cb5d574cd19dc, type: 3}
+  m_Name: 4
+  m_EditorClassIdentifier: 
+  price: 30
+  cardName: bow Tower
+  description: 
+  isTower: 1
+  cardType: 2
+  sprite: {fileID: 21300000, guid: c6b1827a11e79c243ba5143d9991a7b9, type: 3}
+  building: {fileID: 4858758688710170358, guid: 1eb746c146d449b4e95cf4a0e0c5928d, type: 3}

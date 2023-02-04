@@ -6,14 +6,12 @@ public class Bullet : MonoBehaviour
 {
     public Transform target;
     [SerializeField] float speed;
-    private float destoryDistance = 0.02f;
+    private float destoryDistance = 0.05f;
     public int damage;
     public float push;
+    [SerializeField] bool isIce = false;
+    [SerializeField] bool isFire = false;
 
-    private void Start()
-    {
-        
-    }
     private void Update()
     {
         if (target != null && target.tag == "Enemy")
@@ -30,8 +28,7 @@ public class Bullet : MonoBehaviour
             if (Vector3.Distance(transform.position, target.position) < destoryDistance)
             {
                 MapGenerator.mapGenerator.SetText(transform.position, damage);
-                target.gameObject.GetComponent<Enemy>().Hit(damage,push);
-               // Instantiate(MapGenerator.mapGenerator.effect, transform.position, Quaternion.identity);
+                target.gameObject.GetComponent<Enemy>().Hit(damage,push,isIce,isFire);              
                 Destroy(this.gameObject);
             }
         }

@@ -20,13 +20,18 @@ public class Enemy : MonoBehaviour
     public int cellID;
 
     bool wasHit = false;
-
+    bool isIced = false;
+    bool burns = false;
     
 
     private float maxPositionX = 9999;
 
+    float speedBonus = 1f;
+
+
     private void Start()
     {
+        speedBonus = 1f;
         currentLifePoints = maxLifePoints;
 
         animator = GetComponent<Animator>();
@@ -70,7 +75,7 @@ public class Enemy : MonoBehaviour
         if (maxPositionX == 9999)
         {
             animator.SetBool("attack", false);
-            transform.position = transform.position + (Vector3)directionMovement * speed * Time.deltaTime;
+            transform.position = transform.position + (Vector3)directionMovement * speed * speedBonus * Time.deltaTime;
         }
         else
         {
@@ -79,7 +84,7 @@ public class Enemy : MonoBehaviour
                 || directionMovement.x == -1 && transform.position.x >= maxPositionX)
             {
                 animator.SetBool("attack", false);
-                transform.position = transform.position + (Vector3)directionMovement * speed * Time.deltaTime;
+                transform.position = transform.position + (Vector3)directionMovement * speed * speedBonus * Time.deltaTime;
             }
             else
             {
@@ -113,8 +118,41 @@ public class Enemy : MonoBehaviour
             transform.localScale = Vector3.Lerp(transform.localScale, new Vector3(1, 1, 1), Time.deltaTime * 10);
         }
 
-    }
+        if(isIced)
+        {
+            iceStoper = iceStoper - Time.deltaTime;
+            if(iceStoper <= 0)
+            {
+                isIced = false;
+                spriteRenderer.color = Color.white;
+                speedBonus = 1f;
+            }
+        }
+        
+        if(burns)
+        {
+            burnsStoper = burnsStoper - Time.deltaTime;
 
+            time = time - Time.deltaTime;
+            if(time <= 0)
+            {
+                time = 1f;
+                Hit(2, 0, false, false);
+                MapGenerator.mapGenerator.SetText(transform.position, 2);
+            }
+
+            if(burnsStoper <= 0)
+            {
+                burns = false;
+                spriteRenderer.color = Color.white;
+            }
+        }
+
+
+    }
+    float iceStoper;
+    float burnsStoper;
+    float time;
     public void attackBuilding()
     {
         MapGenerator.mapGenerator.Hit(damage, cellID + (int)directionMovement.x);
@@ -130,14 +168,35 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void Hit(int damage,float push)
+    private void Ice()
     {
+        burnsStoper = 0;
+        isIced = true;
+        spriteRenderer.color = Color.cyan;
+        speedBonus = 0.3f;
+        iceStoper = 10f;
+    }
+    
+    private void Fire()
+    {
+        if (!burns) time = 1;
+        iceStoper = 0;
+        burns = true;
+        spriteRenderer.color = Color.red;
+        burnsStoper = 10f;
+    }
+
+    public void Hit(int damage,float push,bool ice,bool fire)
+    {
+        if (ice) Ice();
+        if (fire) Fire();
         wasHit = true;
         SetHitEffect();
         transform.position = transform.position - new Vector3(0.01f * push * directionMovement.x, 0, 0);
         currentLifePoints = Mathf.Clamp(currentLifePoints - damage, 0, maxLifePoints);
         if (currentLifePoints <= 0)
         {
+            Instantiate(MapGenerator.mapGenerator.bloodEffect, transform.position, Quaternion.identity);
             spriteRenderer.material = MapGenerator.mapGenerator.normal;
             spriteRenderer.sprite = sprite;
             spriteRenderer.sortingOrder = -3;

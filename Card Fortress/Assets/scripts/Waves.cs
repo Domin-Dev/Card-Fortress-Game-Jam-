@@ -6,6 +6,15 @@ using UnityEngine.UI;
 public class Waves : MonoBehaviour
 {
     public static Waves waves;
+
+    [SerializeField] Sprite button1;
+    [SerializeField] Sprite button2;
+
+    [SerializeField] Image time2x;
+    [SerializeField] Image time1x;
+
+
+
     [SerializeField] GameObject orc;
     [SerializeField] GameObject skeleton;
     [SerializeField] GameObject slime;
@@ -101,5 +110,28 @@ public class Waves : MonoBehaviour
         waveText.text = "wave: " + waveNumber + "\nmonsters: " + monsterNumber;
     }
 
+    public void SetTime2x()
+    {
+        FindObjectOfType<CameraMovement>().cameraSpeed = 8f;
+        time1x.sprite = button1;
+        time2x.sprite = button2;
+        Time.timeScale = 2f;
+
+    }
+    
+    public void SetTime1x()
+    {
+        FindObjectOfType<CameraMovement>().cameraSpeed = 16f;
+        time1x.sprite = button2;
+        time2x.sprite = button1;
+        Time.timeScale = 1f;
+    }
+    
+    public void SetTime0x()
+    {
+        time1x.sprite = button1;
+        time2x.sprite = button1;
+        Time.timeScale = 0f;
+    }
 
 }

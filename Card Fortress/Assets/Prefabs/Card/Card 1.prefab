@@ -180,6 +180,7 @@ MonoBehaviour:
   cardName: 
   description: 
   sprite: {fileID: 0}
+  isTower: 0
   cardType: 0
   building: {fileID: 4858758688710170358, guid: 0c0127d1f358957408e7126033a6a7f4, type: 3}
 --- !u!1 &2693247264770480220
@@ -265,7 +266,7 @@ TextMesh:
   m_GameObject: {fileID: 2693247264770480220}
   m_Text: Bow tower
   m_OffsetZ: 0
-  m_CharacterSize: 0.05
+  m_CharacterSize: 0.04
   m_LineSpacing: 1
   m_Anchor: 3
   m_Alignment: 1

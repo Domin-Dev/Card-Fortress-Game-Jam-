@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class MapGenerator : MonoBehaviour
 {
+
     [SerializeField] Transform info;
     [SerializeField] Text infoName;
     [SerializeField] Text infoDescription;
@@ -12,18 +14,30 @@ public class MapGenerator : MonoBehaviour
 
     [SerializeField] Text moneyText;
     [SerializeField] Text incomeText;
+
+
+    [SerializeField] Text happinessText;
+    [SerializeField] Image happinessIcon;
+    [SerializeField] List<Sprite> iconlist = new List<Sprite>();
+
     [SerializeField] Image timeBar;
     [SerializeField] Text timerText;
     Animator moneyAnimator;
+
+
     public int money;
-    public int income; 
+    public int income;
+    public int happiness = 0;
 
     [SerializeField]  public Color color;
     [SerializeField]  public Color color2;
     [SerializeField] GameObject rangeImage;
     public static MapGenerator mapGenerator;
 
-    public GameObject effect;
+    public GameObject bloodEffect;
+    public GameObject cardEffect;
+    public GameObject destructionEffect;
+
     public Material normal;
     public Material white;
     
@@ -46,16 +60,36 @@ public class MapGenerator : MonoBehaviour
     private void Start()
     {
         moneyAnimator = moneyText.transform.GetComponentInParent<Animator>();
-        AddMoney(100);
-        AddIncome(10);
+        AddHappiness(60);
+        AddMoney(150);
+        AddIncome(20);
         timer = setTime;
         info = infoName.transform.parent.transform;
+
     }
 
     float timer;
     const int setTime = 10;
     private void Update()
     {
+        if(building != null )
+        {
+            if(isMap && cells[buildingIndex].building == null && cells[buildingIndex].canBuild)
+            {
+                if (canBuild)
+                {
+                    building.GetComponent<SpriteRenderer>().color = Color.green;
+                }
+                else
+                {
+                    building.GetComponent<SpriteRenderer>().color = Color.red;
+                }
+            }
+        }
+
+
+
+
         if (Input.GetKeyDown(KeyCode.K))
         {
             IncreaseBuildZone(3);
@@ -70,17 +104,38 @@ public class MapGenerator : MonoBehaviour
             {
                 if (index > 0 && index < worldSize * 2 + 1 || Mathf.RoundToInt(vector3.x / 0.5f) == 0)
                 {
-                    if (cells[index].building != null)
+                    if (cells[index].building != null )
                     {
                         info.gameObject.SetActive(true);
-                        infoName.text = cells[index].building.name;
                         Tower tower = cells[index].building.GetComponent<Tower>();
-                        infoDescription.text =
-                            "life points: " + tower.maxLifePoints.ToString() + "\n" +
-                            "damage: " + tower.damage.ToString() + "\n" +
-                            "range: " + tower.range.ToString() + "\n" +
-                            "Push: " + tower.push.ToString() + "\n" +
-                            "rate of fire: " + (60 / tower.interval).ToString() + "\n";
+                        infoName.text = tower.towerName;
+
+                        if (tower.isTower)
+                        {
+                            if(Input.GetMouseButton(0))
+                            {
+                                if (rangeObj == null)
+                                {
+                                    rangeObj = Instantiate(rangeImage, new Vector3(cells[index].cell.transform.position.x, -0.9f, 0), Quaternion.identity, transform);
+                                    rangeObj.transform.localScale = new Vector3(2 + 4 * tower.range, 5, 1);
+                                }
+                            }
+                            else if(rangeObj != null)
+                            {
+                                Destroy(rangeObj);
+                            }
+
+                            infoDescription.text =
+                                "life points: " + tower.maxLifePoints.ToString() + "\n" +
+                                "damage: " + tower.damage.ToString() + "\n" +
+                                "range: " + tower.range.ToString() + "\n" +
+                                "Push: " + tower.push.ToString() + "\n" +
+                                "rate of fire: " + (60 / tower.interval).ToString() + "\n";
+                        }
+                        else
+                        {                           
+                            infoDescription.text = tower.description.Replace("!", Environment.NewLine);
+                        }
                     }
                     else
                     {
@@ -93,6 +148,10 @@ public class MapGenerator : MonoBehaviour
                 }
             }
 
+        }
+        else
+        {
+            info.gameObject.SetActive(false);
         }
        
 
@@ -215,7 +274,7 @@ public class MapGenerator : MonoBehaviour
         {
             GameObject building = cells[id].building;
             GameObject textObj;
-            if (Random.Range(0,2) == 1)
+            if (UnityEngine.Random.Range(0,2) == 1)
             textObj = Instantiate(text1, building.transform.position + new Vector3(0,0.2f,0), Quaternion.identity, transform);
             else
             textObj = Instantiate(text2, building.transform.position + new Vector3(0, 0.2f, 0), Quaternion.identity, transform);
@@ -230,7 +289,7 @@ public class MapGenerator : MonoBehaviour
     public void SetText(Vector3 position,int damage)
     {
         GameObject textObj;
-        if (Random.Range(0, 2) == 1)
+        if (UnityEngine.Random.Range(0, 2) == 1)
             textObj = Instantiate(text1,position , Quaternion.identity, transform);
         else
             textObj = Instantiate(text2,position , Quaternion.identity, transform);
@@ -244,6 +303,7 @@ public class MapGenerator : MonoBehaviour
     int buildingIndex = 9999;
     bool isMap;
     GameObject rangeObj;
+    public bool canBuild;
     
     public void BuildingMode(float x, GameObject gameObject)
     {
@@ -270,6 +330,8 @@ public class MapGenerator : MonoBehaviour
             {
                 if (building == null)
                 {
+                    if (rangeObj != null) Destroy(rangeObj);
+
                     building = Instantiate(gameObject, new Vector3(cells[index].cell.transform.position.x, -0.9f, 0), Quaternion.identity, transform);
                     rangeObj = Instantiate(rangeImage, new Vector3(cells[index].cell.transform.position.x, -0.9f, 0), Quaternion.identity, transform);
                     rangeObj.transform.localScale = new Vector3(2 + 4 * range, 5, 1);
@@ -284,6 +346,7 @@ public class MapGenerator : MonoBehaviour
                     }
 
                     building.GetComponent<Tower>().enabled = false;
+                    building.AddComponent<Check>();
                     building.GetComponent<SpriteRenderer>().sortingOrder = 2;
                     building.transform.GetChild(0).transform.gameObject.SetActive(false);
                 }
@@ -309,6 +372,7 @@ public class MapGenerator : MonoBehaviour
                     rangeObj.transform.localScale = new Vector3(2 + 4 * range, 5, 1);
                     building = Instantiate(gameObject, new Vector3(0.5f * index, -0.9f, 0), Quaternion.identity, transform);
                     building.GetComponent<SpriteRenderer>().color = Color.red;
+                    building.AddComponent<Check>();
                     building.GetComponent<SpriteRenderer>().sortingOrder = 2;
                     building.GetComponent<Tower>().enabled = false;
                     building.transform.GetChild(0).transform.gameObject.SetActive(false);
@@ -327,12 +391,40 @@ public class MapGenerator : MonoBehaviour
 
     }
 
+
+    public void SpellMode(float positionX,int range)
+    {
+        int index = Mathf.RoundToInt(positionX / 0.5f);
+        if (rangeObj == null)
+        {
+            rangeObj = Instantiate(rangeImage, new Vector3(0.5f * index, -0.9f, 0), Quaternion.identity, transform);
+            rangeObj.transform.localScale = new Vector3(2 + 4 * range, 5, 1);
+        }
+        else
+        {
+            rangeObj.transform.position = new Vector3(0.5f * index, -0.9f, 0);
+            rangeObj.transform.localScale = new Vector3(2 + 4 * range, 5, 1);
+        }
+    }
+
+    public void SpellModeOff()
+    {
+        Destroy(rangeObj);
+    }
+
+    public void Spell(GameObject spell,float positionX)
+    {
+        Destroy(rangeObj);
+        int index = Mathf.RoundToInt(positionX / 0.5f);
+        Destroy(Instantiate(spell, new Vector3(0.5f * index, 3, 0), Quaternion.identity),15f);
+    }
     public void BuildingModeOff()
     {
         Destroy(rangeObj);
         Destroy(building);
         buildingIndex = 9999;
         range = 0;
+        isMap = false;
     }
 
     public void IncreaseBuildZone(int value)
@@ -360,8 +452,9 @@ public class MapGenerator : MonoBehaviour
 
     public bool Build()
     {
-        if (isMap && cells[buildingIndex].building == null && cells[buildingIndex].canBuild)
+        if (isMap && cells[buildingIndex].building == null && cells[buildingIndex].canBuild && canBuild)
         {
+            Destroy(building.GetComponent<Check>());
             building.GetComponent<SpriteRenderer>().sortingOrder = -2;
             building.GetComponent<Tower>().enabled = true;
             building.transform.GetChild(0).transform.gameObject.SetActive(true);
@@ -401,7 +494,39 @@ public class MapGenerator : MonoBehaviour
     {
         income = income + Value;
         incomeText.text = "+" + income.ToString();
-        moneyAnimator.SetTrigger("added");
+    } 
+    
+    public void SubtractIncome(int Value)
+    {
+        income = income - Value;
+        incomeText.text = "+" + income.ToString();
     }
+    
+    public void AddHappiness(int Value)
+    {
+        happiness = happiness + Value;
+        happinessText.text = happiness.ToString();
+        if(happiness >= 90f)
+        {
+            happinessIcon.sprite = iconlist[0];
+        }
+        else if (happiness >= 60f)
+        {
+            happinessIcon.sprite = iconlist[1];
 
+        }else if(happiness >= 30f)
+        {
+            happinessIcon.sprite = iconlist[2];
+
+        }else if(happiness >= 0)
+        {
+            happinessIcon.sprite = iconlist[3];
+        }
+        else
+        {
+            happinessIcon.sprite = iconlist[4];
+        }
+
+    } 
+    
 }

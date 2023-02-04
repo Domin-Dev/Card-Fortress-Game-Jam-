@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    [SerializeField] float cameraSpeed;
+    [SerializeField]  public float cameraSpeed;
     public int border;
 
 

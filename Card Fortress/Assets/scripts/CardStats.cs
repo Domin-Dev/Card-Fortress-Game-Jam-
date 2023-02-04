@@ -10,7 +10,7 @@ public class CardStats : MonoBehaviour
     {
         building,
         spell,
-        bonus,
+        defenceStructure,
         upgrade,
     }
     public int price; 
@@ -22,11 +22,16 @@ public class CardStats : MonoBehaviour
 
     public CardType cardType;
     public GameObject building;
+    public GameObject spell;
 
     public void UpdateCard()
     {
-       if(!isTower)  transform.GetChild(3).GetComponent<TextMesh>().text = description.Replace("!", Environment.NewLine);
-        else if(building != null)
+        if (!isTower)
+        {
+            transform.GetChild(3).GetComponent<TextMesh>().text = description.Replace("!", Environment.NewLine);
+            if (building != null) building.GetComponent<Tower>().description = description;
+        }
+        else if (building != null)
         {
             Tower tower = building.GetComponent<Tower>();
             transform.GetChild(3).GetComponent<TextMesh>().text =
@@ -34,7 +39,8 @@ public class CardStats : MonoBehaviour
                 "damage: " + tower.damage.ToString() + "\n" +
                 "range: " + tower.range.ToString() + "\n" +
                 "Push: " + tower.push.ToString() + "\n" +
-                "rate of fire: " + (60 /tower.interval).ToString() + "\n";
+                "rate of fire: " + (60 / tower.interval).ToString() + "\n";
+            tower.description = description;
 
         }
         transform.GetChild(2).GetComponent<TextMesh>().text = price.ToString();

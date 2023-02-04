@@ -14,6 +14,7 @@ public class CardData : ScriptableObject
     public Sprite sprite;
 
     [Space(30)]public GameObject building;
+    [Space(30)]public GameObject Spell;
 
 
 }

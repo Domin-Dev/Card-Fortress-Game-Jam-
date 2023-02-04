@@ -23,6 +23,10 @@ public class Card : MonoBehaviour
         sortingGroup = GetComponent<SortingGroup>();
         sortingOrder = sortingGroup.sortingOrder;
         startPosition = transform.localPosition;
+        if (cardStats.cardType == CardStats.CardType.building || cardStats.cardType == CardStats.CardType.defenceStructure)
+        {
+            cardStats.building.GetComponent<Tower>().towerName = cardStats.cardName;
+        }
     }
     public float speed = 10;
 
@@ -94,11 +98,13 @@ public class Card : MonoBehaviour
 
             if (transform.position.y > -2f)
             {
-                if (cardStats.cardType == CardStats.CardType.building) MapGenerator.mapGenerator.BuildingMode(vector3.x, cardStats.building);
+                if (cardStats.cardType == CardStats.CardType.building || cardStats.cardType == CardStats.CardType.defenceStructure) MapGenerator.mapGenerator.BuildingMode(vector3.x, cardStats.building);
+                else if(cardStats.cardType == CardStats.CardType.spell) MapGenerator.mapGenerator.SpellMode(vector3.x, cardStats.spell.GetComponent<Spell>().range);
             }
             else
             {
-                if (cardStats.cardType == CardStats.CardType.building) MapGenerator.mapGenerator.BuildingModeOff();
+                if (cardStats.cardType == CardStats.CardType.building || cardStats.cardType == CardStats.CardType.defenceStructure) MapGenerator.mapGenerator.BuildingModeOff();
+                else if(cardStats.cardType == CardStats.CardType.spell) MapGenerator.mapGenerator.SpellModeOff();
             }
 
 
@@ -112,18 +118,36 @@ public class Card : MonoBehaviour
     {
         if (transform.position.y > -2f)
         {
-            if (cardStats.cardType == CardStats.CardType.building) if (MapGenerator.mapGenerator.Build())
-                {
-                    GetComponent<BoxCollider2D>().enabled = false;
-                    MapGenerator.mapGenerator.SubtractMoney(cardStats.price);
-                    isUsed = true;
-                    CardsManager.cardsManager.UsedCard(slotIndex);
-                    Destroy(gameObject,2f);
-                }
+        if (cardStats.cardType == CardStats.CardType.building || cardStats.cardType == CardStats.CardType.defenceStructure)
+        {
+            if (MapGenerator.mapGenerator.Build())
+            {
+                FindObjectOfType<CameraShake>().start = true;
+                Instantiate(MapGenerator.mapGenerator.cardEffect, transform.position, Quaternion.identity);
+                GetComponent<BoxCollider2D>().enabled = false;
+                MapGenerator.mapGenerator.SubtractMoney(cardStats.price);
+                isUsed = true;
+                CardsManager.cardsManager.UsedCard(slotIndex);
+                Destroy(gameObject, 2f);
+
+            } 
+        }
+        else if (cardStats.cardType == CardStats.CardType.spell)
+        {
+            MapGenerator.mapGenerator.Spell(cardStats.spell, transform.position.x);
+            FindObjectOfType<CameraShake>().start = true;
+            Instantiate(MapGenerator.mapGenerator.cardEffect, transform.position, Quaternion.identity);
+            GetComponent<BoxCollider2D>().enabled = false;
+            MapGenerator.mapGenerator.SubtractMoney(cardStats.price);
+            isUsed = true;
+            CardsManager.cardsManager.UsedCard(slotIndex);
+            Destroy(gameObject, 2f);
+        }         
         }
         else
         {
-            if (cardStats.cardType == CardStats.CardType.building) MapGenerator.mapGenerator.BuildingModeOff();
+            if (cardStats.cardType == CardStats.CardType.building || cardStats.cardType == CardStats.CardType.defenceStructure) MapGenerator.mapGenerator.BuildingModeOff();
+            else if (cardStats.cardType == CardStats.CardType.spell) MapGenerator.mapGenerator.SpellModeOff();
         }
 
         if (CardsManager.cardsManager.selectedCard == this)
