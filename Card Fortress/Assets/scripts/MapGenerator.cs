@@ -7,10 +7,20 @@ using System;
 public class MapGenerator : MonoBehaviour
 {
 
+    [SerializeField] Transform end; 
+    [SerializeField] Text text;
     [SerializeField] Transform info;
     [SerializeField] Text infoName;
     [SerializeField] Text infoDescription;
     int infoIndex = 9999;
+
+    string happinessString = "Happiness influences the rate of fire of the towers.\n\n " +
+        "Happiness is reduced by:" + "\n- the construction of houses" + "\n - destruction of buildings"
+
+        + "\n\n happiness is increased by:" + "\n - building the right buildings";
+
+
+
 
     [SerializeField] Text moneyText;
     [SerializeField] Text incomeText;
@@ -62,7 +72,7 @@ public class MapGenerator : MonoBehaviour
         moneyAnimator = moneyText.transform.GetComponentInParent<Animator>();
         AddHappiness(60);
         AddMoney(150);
-        AddIncome(20);
+        AddIncome(25);
         timer = setTime;
         info = infoName.transform.parent.transform;
 
@@ -89,15 +99,8 @@ public class MapGenerator : MonoBehaviour
 
 
 
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            IncreaseBuildZone(3);
-        }
-
-
         Vector3 vector3 = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        if(vector3.y > -1.7f && vector3.y < 0.5f)
+        if(vector3.y > -1.7f && vector3.y < 0.5f && Time.timeScale != 0f)
         {
             int index = GetIndex(vector3.x);
             if(infoIndex != index)
@@ -130,7 +133,7 @@ public class MapGenerator : MonoBehaviour
                                 "damage: " + tower.damage.ToString() + "\n" +
                                 "range: " + tower.range.ToString() + "\n" +
                                 "Push: " + tower.push.ToString() + "\n" +
-                                "rate of fire: " + (60 / tower.interval).ToString() + "\n";
+                                "rate of fire: " + (60 / tower.interval).ToString() + "(" + tower.bonusSpeed * 100 + "%)" +  "\n";
                         }
                         else
                         {                           
@@ -147,14 +150,11 @@ public class MapGenerator : MonoBehaviour
                     info.gameObject.SetActive(false);
                 }
             }
-
         }
         else
         {
             info.gameObject.SetActive(false);
-        }
-       
-
+        }       
 
         if(timer > 0)
         {
@@ -186,7 +186,7 @@ public class MapGenerator : MonoBehaviour
         GameObject tower = Instantiate(kingTower, new Vector3(0, -0.9f, 0), Quaternion.identity, transform);
         cells[0] = new Cell(tower,cellObj,true);
 
-        for (int i = 1; i < worldSize + 15; i++)
+        for (int i = 1; i < worldSize + 30; i++)
         {
             GameObject obj1 = Instantiate(cell, new Vector3(0.5f * i, -5, 0), Quaternion.identity, transform);
             GameObject obj2 = Instantiate(cell, new Vector3(0.5f * (-i), -5, 0), Quaternion.identity, transform);
@@ -302,7 +302,7 @@ public class MapGenerator : MonoBehaviour
     GameObject building;
     int buildingIndex = 9999;
     bool isMap;
-    GameObject rangeObj;
+    public GameObject rangeObj;
     public bool canBuild;
     
     public void BuildingMode(float x, GameObject gameObject)
@@ -412,11 +412,50 @@ public class MapGenerator : MonoBehaviour
         Destroy(rangeObj);
     }
 
-    public void Spell(GameObject spell,float positionX)
+    public bool Spell(int id,GameObject spell,float positionX, out bool remove)
     {
-        Destroy(rangeObj);
-        int index = Mathf.RoundToInt(positionX / 0.5f);
-        Destroy(Instantiate(spell, new Vector3(0.5f * index, 3, 0), Quaternion.identity),15f);
+        remove = false;
+        int index = GetIndex(positionX); 
+        if (spell == null)
+        {
+            switch (id)
+            {
+                case 1: 
+                    if (index != 0 && cells[index].building != null) cells[index].building.GetComponent<Tower>().Hit(999999);
+                    else
+                    {
+                        if (rangeObj != null) Destroy(rangeObj);
+                        return false;
+                    }
+                    break; 
+                case 2:  
+                    remove = IncreaseBuildZone(3);
+                    break;
+                case 3:
+                    if (cells[index].building != null) cells[index].building.GetComponent<Tower>().Heal(0.5f);
+                    else
+                    {
+                        if (rangeObj != null) Destroy(rangeObj);
+                        return false;
+                    }
+                    break;
+                case 4:
+                    if (cells[index].building != null) cells[index].building.GetComponent<Tower>().Heal(0.75f);
+                    if (cells[GetIndex(positionX - 0.5f)].building != null) cells[GetIndex(positionX - 0.5f)].building.GetComponent<Tower>().Heal(0.75f); 
+                    if (cells[GetIndex(positionX + 0.5f)].building != null) cells[GetIndex(positionX + 0.5f)].building.GetComponent<Tower>().Heal(0.75f); 
+                    break;
+
+            }
+
+        }
+        else
+        {
+            index = Mathf.RoundToInt(positionX / 0.5f);
+            Destroy(rangeObj);
+            Destroy(Instantiate(spell, new Vector3(0.5f * index, 3, 0), Quaternion.identity), 15f);
+        }
+        if(rangeObj != null) Destroy(rangeObj);
+        return true;
     }
     public void BuildingModeOff()
     {
@@ -427,7 +466,7 @@ public class MapGenerator : MonoBehaviour
         isMap = false;
     }
 
-    public void IncreaseBuildZone(int value)
+    public bool IncreaseBuildZone(int value)
     {
         buildZone = Mathf.Clamp(buildZone + value, 0, worldSize);
 
@@ -448,15 +487,19 @@ public class MapGenerator : MonoBehaviour
                 cells[worldSize + i].cell.GetComponent<SpriteRenderer>().color = Color.grey;
             }
         }
+        if (buildZone == worldSize - 1) return true;
+        else return false;
     }
 
     public bool Build()
     {
         if (isMap && cells[buildingIndex].building == null && cells[buildingIndex].canBuild && canBuild)
         {
+            music.music1.PLay(1);
             Destroy(building.GetComponent<Check>());
             building.GetComponent<SpriteRenderer>().sortingOrder = -2;
             building.GetComponent<Tower>().enabled = true;
+            building.GetComponent<Tower>().bonusSpeed = bonus;
             building.transform.GetChild(0).transform.gameObject.SetActive(true);
             building.GetComponent<SpriteRenderer>().color = Color.white;
             cells[buildingIndex].building = building;
@@ -502,31 +545,63 @@ public class MapGenerator : MonoBehaviour
         incomeText.text = "+" + income.ToString();
     }
     
+
+    public float bonus;
     public void AddHappiness(int Value)
     {
+
         happiness = happiness + Value;
         happinessText.text = happiness.ToString();
         if(happiness >= 90f)
         {
             happinessIcon.sprite = iconlist[0];
+            bonus = 0.3f;
         }
         else if (happiness >= 60f)
         {
             happinessIcon.sprite = iconlist[1];
-
-        }else if(happiness >= 30f)
+            bonus = 0;
+        }
+        else if(happiness >= 30f)
         {
             happinessIcon.sprite = iconlist[2];
+            bonus = -0.2f;
 
         }else if(happiness >= 0)
         {
             happinessIcon.sprite = iconlist[3];
+            bonus = -0.35f;
         }
         else
         {
             happinessIcon.sprite = iconlist[4];
+            bonus = -0.5f;
+        }
+
+        text.text = "current bonus(" + (bonus * 100).ToString() + "%)" + happinessString;
+
+        foreach (Tower item in FindObjectsOfType<Tower>())
+        {
+            item.bonusSpeed = bonus;
         }
 
     } 
     
+    public void End()
+    {
+        CardsManager.cardsManager.SelectedCardOff();
+        Time.timeScale = 0f;
+        end.gameObject.SetActive(true);
+        CardsManager.cardsManager.SetActiveCard(false);
+        if (FindObjectsOfType<Card>().Length > 0)
+        {
+            foreach (Card item in FindObjectsOfType<Card>())
+            {
+                item.gameObject.SetActive(false);
+            }
+        }
+    }
+
 }
+
+

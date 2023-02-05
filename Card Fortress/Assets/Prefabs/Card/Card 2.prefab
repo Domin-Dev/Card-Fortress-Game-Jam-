@@ -21,7 +21,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2693247264280690097
 Transform:
   m_ObjectHideFlags: 0
@@ -59,7 +59,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -183,6 +183,8 @@ MonoBehaviour:
   isTower: 0
   cardType: 1
   building: {fileID: 0}
+  spell: {fileID: 0}
+  spellID: 0
 --- !u!1 &2693247264770480220
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,7 +268,7 @@ TextMesh:
   m_GameObject: {fileID: 2693247264770480220}
   m_Text: Bow tower
   m_OffsetZ: 0
-  m_CharacterSize: 0.04
+  m_CharacterSize: 0.035
   m_LineSpacing: 1
   m_Anchor: 3
   m_Alignment: 1
@@ -328,7 +330,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

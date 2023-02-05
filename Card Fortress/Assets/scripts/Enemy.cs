@@ -22,7 +22,11 @@ public class Enemy : MonoBehaviour
     bool wasHit = false;
     bool isIced = false;
     bool burns = false;
-    
+
+    public float speedBonus2;
+    public float hpBonus;
+    public float damageBonus;
+
 
     private float maxPositionX = 9999;
 
@@ -31,8 +35,14 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
+        speedBonus2 = Waves.waves.speedBonus;
+        hpBonus = Waves.waves.hpBonus;
+        damageBonus = Waves.waves.damageBonus;
+
+
         speedBonus = 1f;
-        currentLifePoints = maxLifePoints;
+        currentLifePoints = maxLifePoints  + Mathf.RoundToInt(maxLifePoints * hpBonus);
+
 
         animator = GetComponent<Animator>();
     
@@ -75,7 +85,7 @@ public class Enemy : MonoBehaviour
         if (maxPositionX == 9999)
         {
             animator.SetBool("attack", false);
-            transform.position = transform.position + (Vector3)directionMovement * speed * speedBonus * Time.deltaTime;
+            transform.position = transform.position + (Vector3)directionMovement *(speed + (speed * speedBonus2) ) * speedBonus * Time.deltaTime;
         }
         else
         {
@@ -84,7 +94,7 @@ public class Enemy : MonoBehaviour
                 || directionMovement.x == -1 && transform.position.x >= maxPositionX)
             {
                 animator.SetBool("attack", false);
-                transform.position = transform.position + (Vector3)directionMovement * speed * speedBonus * Time.deltaTime;
+                transform.position = transform.position + (Vector3)directionMovement * (speed + (speed * speedBonus2)) * speedBonus * Time.deltaTime;
             }
             else
             {
@@ -155,7 +165,7 @@ public class Enemy : MonoBehaviour
     float time;
     public void attackBuilding()
     {
-        MapGenerator.mapGenerator.Hit(damage, cellID + (int)directionMovement.x);
+        MapGenerator.mapGenerator.Hit(damage + Mathf.RoundToInt(damage * damageBonus), cellID + (int)directionMovement.x);
         cellID = Mathf.RoundToInt(transform.position.x / 0.5f);
         animator.SetBool("attack", false);
         if (MapGenerator.mapGenerator.CheckBuilding(cellID + (int)directionMovement.x))
@@ -193,7 +203,7 @@ public class Enemy : MonoBehaviour
         wasHit = true;
         SetHitEffect();
         transform.position = transform.position - new Vector3(0.01f * push * directionMovement.x, 0, 0);
-        currentLifePoints = Mathf.Clamp(currentLifePoints - damage, 0, maxLifePoints);
+        currentLifePoints = Mathf.Clamp(currentLifePoints - damage, 0, maxLifePoints + Mathf.RoundToInt(maxLifePoints * hpBonus));
         if (currentLifePoints <= 0)
         {
             Instantiate(MapGenerator.mapGenerator.bloodEffect, transform.position, Quaternion.identity);

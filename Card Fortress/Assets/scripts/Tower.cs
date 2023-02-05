@@ -24,6 +24,7 @@ public class Tower : MonoBehaviour
 
     bool canShot;
     public float interval;
+    public float bonusSpeed =  0;
     private float time;
 
     bool wasHit;
@@ -45,11 +46,13 @@ public class Tower : MonoBehaviour
         { 
             if(isAristocratic && Mathf.Abs(transform.position.x) == 0.5f)
             {
-                income = 2 * income;
+                income = 15;
             }
             MapGenerator.mapGenerator.AddIncome(income);
-            MapGenerator.mapGenerator.AddHappiness(happiness);
         }
+        MapGenerator.mapGenerator.AddHappiness(happiness);
+
+
     }
     float stoper;
     private void Update()
@@ -127,12 +130,18 @@ public class Tower : MonoBehaviour
             MapGenerator.mapGenerator.AddHappiness(-1);
             if (income > 0) MapGenerator.mapGenerator.SubtractIncome(income);
 
+            if (gameObject.tag == "KingTower") MapGenerator.mapGenerator.End();
             Instantiate(MapGenerator.mapGenerator.destructionEffect, transform.position, Quaternion.identity);
             Destroy(this.gameObject);
 
         }
     }
 
+    public void Heal(float bonusHP)
+    {
+        currentLifePoints = Mathf.Clamp(currentLifePoints + Mathf.RoundToInt(bonusHP * maxLifePoints), 0, maxLifePoints);
+        refreshHP();
+    }
 
 
     private void Shot(Transform target)
@@ -141,7 +150,7 @@ public class Tower : MonoBehaviour
         {
             shot = true;
         canShot = false;
-        time = interval;
+        time = interval - (interval * bonusSpeed);
         GameObject gameObject = Instantiate(bullet, shotPoint.position, Quaternion.identity);
 
         gameObject.GetComponent<Bullet>().target = target;

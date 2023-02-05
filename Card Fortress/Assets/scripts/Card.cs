@@ -90,7 +90,7 @@ public class Card : MonoBehaviour
 
     private void OnMouseDrag()
     {
-        if(cardStats.price <=  MapGenerator.mapGenerator.money)
+        if(cardStats.price <=  MapGenerator.mapGenerator.money &&  Time.timeScale != 0f)
         {
             CardsManager.cardsManager.selectedCard = this;
             Vector3 vector3 = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -99,7 +99,14 @@ public class Card : MonoBehaviour
             if (transform.position.y > -2f)
             {
                 if (cardStats.cardType == CardStats.CardType.building || cardStats.cardType == CardStats.CardType.defenceStructure) MapGenerator.mapGenerator.BuildingMode(vector3.x, cardStats.building);
-                else if(cardStats.cardType == CardStats.CardType.spell) MapGenerator.mapGenerator.SpellMode(vector3.x, cardStats.spell.GetComponent<Spell>().range);
+                else if (cardStats.cardType == CardStats.CardType.spell)
+                {
+                    int range;
+                    if (cardStats.spell != null) range = cardStats.spell.GetComponent<Spell>().range;
+                    else if (cardStats.spellID == 4) range = 1;
+                    else range = 0;
+                    MapGenerator.mapGenerator.SpellMode(vector3.x, range);
+                }
             }
             else
             {
@@ -127,21 +134,24 @@ public class Card : MonoBehaviour
                 GetComponent<BoxCollider2D>().enabled = false;
                 MapGenerator.mapGenerator.SubtractMoney(cardStats.price);
                 isUsed = true;
-                CardsManager.cardsManager.UsedCard(slotIndex);
+                CardsManager.cardsManager.UsedCard(slotIndex,false);
                 Destroy(gameObject, 2f);
 
             } 
         }
         else if (cardStats.cardType == CardStats.CardType.spell)
         {
-            MapGenerator.mapGenerator.Spell(cardStats.spell, transform.position.x);
-            FindObjectOfType<CameraShake>().start = true;
-            Instantiate(MapGenerator.mapGenerator.cardEffect, transform.position, Quaternion.identity);
-            GetComponent<BoxCollider2D>().enabled = false;
-            MapGenerator.mapGenerator.SubtractMoney(cardStats.price);
-            isUsed = true;
-            CardsManager.cardsManager.UsedCard(slotIndex);
-            Destroy(gameObject, 2f);
+                if (MapGenerator.mapGenerator.Spell(cardStats.spellID, cardStats.spell, transform.position.x,out bool remove))
+                { 
+                    FindObjectOfType<CameraShake>().start = true;
+                    Instantiate(MapGenerator.mapGenerator.cardEffect, transform.position, Quaternion.identity);
+                    GetComponent<BoxCollider2D>().enabled = false;
+                    MapGenerator.mapGenerator.SubtractMoney(cardStats.price);
+                    isUsed = true;
+                    int index = CardsManager.cardsManager.GetIndexBySlot(slotIndex);
+                    CardsManager.cardsManager.UsedCard(slotIndex,remove);
+                    Destroy(gameObject, 2f);
+                }
         }         
         }
         else
@@ -162,6 +172,19 @@ public class Card : MonoBehaviour
 
     }
 
+    public void ComeBack()
+    {
+        if (cardStats.cardType == CardStats.CardType.building || cardStats.cardType == CardStats.CardType.defenceStructure) MapGenerator.mapGenerator.BuildingModeOff();
+        else if (cardStats.cardType == CardStats.CardType.spell) MapGenerator.mapGenerator.SpellModeOff();
+
+        isnUsed = true;
+        CardsManager.cardsManager.selectedCard = null;
+        sortingGroup.sortingOrder = sortingOrder;
+        GetComponent<BoxCollider2D>().enabled = false;
+        transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
+        animator.SetBool("selected", false);
+    }
+
     private void OnMouseExit()
     {
         if(CardsManager.cardsManager.selectedCard == null)
@@ -175,7 +198,7 @@ public class Card : MonoBehaviour
 
     private void OnMouseOver()
     {
-        if(CardsManager.cardsManager.selectedCard == null)
+        if(CardsManager.cardsManager.selectedCard == null &&  Time.timeScale != 0f)
         {
             if (cardStats.price <= MapGenerator.mapGenerator.money) CardsManager.cardsManager.Enough(true);
             else CardsManager.cardsManager.Enough(false);

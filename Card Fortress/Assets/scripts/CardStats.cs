@@ -23,6 +23,7 @@ public class CardStats : MonoBehaviour
     public CardType cardType;
     public GameObject building;
     public GameObject spell;
+    public int spellID;
 
     public void UpdateCard()
     {
@@ -39,7 +40,7 @@ public class CardStats : MonoBehaviour
                 "damage: " + tower.damage.ToString() + "\n" +
                 "range: " + tower.range.ToString() + "\n" +
                 "Push: " + tower.push.ToString() + "\n" +
-                "rate of fire: " + (60 / tower.interval).ToString() + "\n";
+                "rate of\n fire: " + (60 / tower.interval).ToString() + "(" +tower.bonusSpeed * 100 + "%)"+ "\n";
             tower.description = description;
 
         }

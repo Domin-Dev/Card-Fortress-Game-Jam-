@@ -80,7 +80,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -195,7 +195,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: -2475286766761212127}
   m_Layer: 0
   m_Name: Aristocratic House
-  m_TagString: KingTower
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -377,7 +377,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -426,15 +426,17 @@ MonoBehaviour:
   isTower: 0
   isAristocratic: 1
   towerName: Aristocratic House
-  description: increases income! by 2 coins
+  description: +12 income!-30 happiness!if it is next to the!king, the income! is
+    15.
   currentLifePoints: 0
   maxLifePoints: 300
-  damage: 10
+  damage: 0
   range: 0
   push: 0
-  income: 10
-  happiness: -20
+  income: 12
+  happiness: -30
   interval: 0
+  bonusSpeed: 0
   target: {fileID: 0}
 --- !u!61 &8827553471736622686
 BoxCollider2D:

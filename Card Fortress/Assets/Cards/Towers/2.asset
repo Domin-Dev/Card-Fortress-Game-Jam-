@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bba85283e35eb5842b9cb5d574cd19dc, type: 3}
   m_Name: 2
   m_EditorClassIdentifier: 
-  price: 30
+  IsAtStart: 0
+  price: 100
   cardName: Javelin Tower
   description: 
   isTower: 1
   cardType: 2
   sprite: {fileID: 21300000, guid: 4e90a1d5d7e464644b8b433542d3f43b, type: 3}
   building: {fileID: 4858758688710170358, guid: 81d38f8e5c5b8b94ea194fb7eb5e0be0, type: 3}
+  Spell: {fileID: 0}
+  spellID: 0

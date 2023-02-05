@@ -6,7 +6,7 @@ public class Bullet : MonoBehaviour
 {
     public Transform target;
     [SerializeField] float speed;
-    private float destoryDistance = 0.05f;
+    private float destoryDistance = 0.1f;
     public int damage;
     public float push;
     [SerializeField] bool isIce = false;

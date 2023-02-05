@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bba85283e35eb5842b9cb5d574cd19dc, type: 3}
   m_Name: 9
   m_EditorClassIdentifier: 
-  price: 0
+  IsAtStart: 0
+  price: 100
   cardName: Large Hut
-  description: increases income! by 2 coins
+  description: + 6 income! - 12 happiness
   isTower: 0
   cardType: 0
   sprite: {fileID: 21300000, guid: b312ae21891bc49429f4c5bc60be8785, type: 3}
   building: {fileID: 4858758688710170358, guid: 498a2c4eb221c1b4ba3ec38a92f4c956, type: 3}
+  Spell: {fileID: 0}
+  spellID: 0

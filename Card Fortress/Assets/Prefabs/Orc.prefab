@@ -54,7 +54,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -119,11 +119,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sprite: {fileID: 21300000, guid: 7f3f95276a6ca114f85e22f1d64d1649, type: 3}
   currentLifePoints: 0
-  maxLifePoints: 40
-  damage: 2
+  maxLifePoints: 200
+  damage: 20
   range: 0
-  speed: 0.75
+  speed: 0.8
   cellID: 0
+  speedBonus2: 0
+  hpBonus: 0
+  damageBonus: 0
 --- !u!50 &4420664427820747331
 Rigidbody2D:
   serializedVersion: 4

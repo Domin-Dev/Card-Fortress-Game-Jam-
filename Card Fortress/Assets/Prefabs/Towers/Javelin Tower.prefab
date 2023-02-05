@@ -80,7 +80,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -195,7 +195,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: -2475286766761212127}
   m_Layer: 0
   m_Name: Javelin Tower
-  m_TagString: KingTower
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -377,7 +377,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -424,13 +424,18 @@ MonoBehaviour:
   shotPoint: {fileID: 1235195984405572732}
   bullet: {fileID: 9205095931627967769, guid: 269e5d60415683a4d9e748602cec8bdd, type: 3}
   isTower: 1
-  towerName: 
+  isAristocratic: 0
+  towerName: Javelin Tower
+  description: 
   currentLifePoints: 0
-  maxLifePoints: 200
-  damage: 10
-  range: 3
+  maxLifePoints: 250
+  damage: 8
+  range: 4
   push: 30
-  interval: 0.2
+  income: 0
+  happiness: 0
+  interval: 0.5
+  bonusSpeed: 0
   target: {fileID: 0}
 --- !u!61 &8827553471736622686
 BoxCollider2D:
